@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google Fonts: Quantico -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NEXORA</title>
@@ -9,14 +14,17 @@
 <body>
   <div id="menu">
     <h1>NEXORA</h1>
-    <button id="connectWallet">Connect Wallet</button>
-    <button id="startGame">Start Game</button>
+    <p class="subtitle">Built on MONAD</p>
+    <button id="startGame"><b>START GAME</b></button>
+    <button id="connectWallet"><b>🦊 CONNECT WALLET</b></button>
     <p class="credits">Built with ❤️ for Hackhazards 2025</p>
+    <p class="subCredits">Bandana | Neha | Piyush | Priyanshu</p>
   </div>
 
   <canvas id="gameCanvas"></canvas>
 
   <script src="assets/scripts/player.js"></script>
+  <script src="assets/scripts/coin.js"></script>
   <script src="assets/scripts/enemy.js"></script>
   <script src="assets/scripts/main.js"></script>
 </body>

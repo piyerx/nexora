@@ -1,0 +1,129 @@
+/* Reset and base styling */
+* {
+    font-family: "Quantico", sans-serif;
+  }
+  
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Quantico", sans-serif;
+    background: url("./assets/images/misc/nex-menu-bg.gif") center center / cover no-repeat;
+    background-attachment: fixed;
+    color: white;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  /* Menu container */
+  #menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    gap: 20px;
+    transform: translateY(-50px); /* 👈 this pulls the whole thing up */
+  }
+  
+  
+  /* Glowing Title */
+  h1 {
+    font-weight: 800; /* bold */
+    font-size: 170px;
+    margin-bottom: 0px;
+    color: #00fff7;
+    text-shadow: 0 0 4px #00fff7, 0 0 8px #00fff7;
+    animation: glow 0.5s ease-in-out infinite alternate;
+  }
+
+  .subtitle { 
+    font-size: 30px;
+    color: #a8f4fe;
+    margin-top: -40px;
+    margin-bottom: 30px;
+    font-weight: 100;
+    text-shadow: 0 0 5px #00fff7;
+    animation: glow 0.5s ease-in-out infinite alternate;
+  }
+  
+  @keyframes glow {
+    from {
+      text-shadow: 0 0 4px #00fff7, 0 0 8px #8afffb;
+    }
+    to {
+      text-shadow: 0 0 8px #00fff7, 0 0 16px #81fffb;
+    }
+  }
+  
+  
+  /* Buttons with hover animation */
+
+button {
+    font-family: "Quantico", sans-serif;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  /* Big Green Start Button */
+  #startGame {
+    background-color: #008510;
+    color: #ffffff;
+    font-size: 20px;
+    padding: 14px 32px;
+    margin: 12px 0;
+    box-shadow: 0 0 8px rgba(78, 240, 55, 0.4);
+  }
+  
+  #startGame:hover {
+    background-color: #95ff89;
+    color: #000;
+    transform: scale(1.07);
+    box-shadow: 0 0 14px rgba(148, 255, 133, 0.8);
+  }
+  
+  /* Smaller Connect Wallet Button */
+  #connectWallet {
+    background-color: #0071b3;
+    color: #ffffff;
+    font-size: 14px;
+    padding: 9px 18px;
+    margin: 0px 0;
+    box-shadow: 0 0 6px rgba(0, 185, 255, 0.4);
+  }
+  
+  #connectWallet:hover {
+    background-color: #00c8ff;
+    color: #000;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 208, 255, 0.7);
+  }
+  
+  
+  /* Credits */
+  .credits {
+    margin-top: 85px;
+    font-size: 17px;
+    color: #ffffff;
+    text-shadow: 0 0 3px #ffffff;
+  }
+  .subCredits {
+    margin-top: -30px;
+    font-size: 15px;
+    color: #ccc;
+    text-shadow: 0 0 2px #ffffff;
+  }
+  
+  /* Canvas stays hidden for now */
+  canvas#gameCanvas {
+    display: none;
+  }
+  
+  
+  
