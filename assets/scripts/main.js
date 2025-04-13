@@ -1,5 +1,6 @@
 import Player from './player.js';
 import Enemy from './enemy.js';
+import Coin from './coin.js'; // NEW
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -20,16 +21,28 @@ const game = {
 
 const player = new Player(game);
 
-// Create some enemies spaced out across the level
+// Create enemies spaced across the level
 const enemies = [
   new Enemy(game, 400, groundLevel - 60),
   new Enemy(game, 700, groundLevel - 60),
   new Enemy(game, 1000, groundLevel - 60)
 ];
 
-// Define end zone for the level
+// Create coins (spread throughout the level)
+const coins = [
+  new Coin(150, groundLevel - 70),
+  new Coin(300, groundLevel - 120),
+  new Coin(550, groundLevel - 70),
+  new Coin(800, groundLevel - 100),
+  new Coin(950, groundLevel - 70),
+  new Coin(1100, groundLevel - 120)
+];
+
+let coinCount = 0;
+
+// Define end zone
 const endZone = {
-  x: 1100,
+  x: 1150,
   y: groundLevel - 60,
   width: 40,
   height: 60
@@ -55,6 +68,21 @@ function gameLoop() {
       enemy.draw(ctx);
     }
   });
+
+  // Draw and update coins
+  coins.forEach((coin) => {
+    if (!coin.collected) {
+      if (coin.update(player)) {
+        coinCount++;
+      }
+      coin.draw(ctx);
+    }
+  });
+
+  // Draw coin count
+  ctx.fillStyle = 'yellow';
+  ctx.font = '18px Arial';
+  ctx.fillText(`Coins: ${coinCount}`, 10, 30);
 
   // Draw end zone
   ctx.fillStyle = 'green';
