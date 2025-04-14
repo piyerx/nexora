@@ -11,21 +11,26 @@
   <title>NEXORA</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
+<div id="toast"></div>
+
 <body>
+  <div id="fade-overlay"></div>
   <div id="menu">
     <h1>NEXORA</h1>
     <p class="subtitle">Built on MONAD</p>
-    <button id="startGame"><b>START GAME</b></button>
+    <button id="startGame" disabled><b>START GAME</b></button>
     <button id="connectWallet"><b>🦊 CONNECT WALLET</b></button>
     <p class="credits">Built with ❤️ for Hackhazards 2025</p>
     <p class="subCredits">Bandana | Neha | Piyush | Priyanshu</p>
   </div>
-
+  <div id="fade-overlay"></div>
   <canvas id="gameCanvas"></canvas>
 
   <script src="assets/scripts/player.js"></script>
   <script src="assets/scripts/coin.js"></script>
   <script src="assets/scripts/enemy.js"></script>
-  <script src="assets/scripts/main.js"></script>
+  <script type="module" src="assets/scripts/main.js"></script>
+
 </body>
 </html>

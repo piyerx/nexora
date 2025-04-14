@@ -1,6 +1,6 @@
 import Player from './player.js';
 import Enemy from './enemy.js';
-import Coin from './coin.js'; // NEW
+import Coin from './coin.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -21,14 +21,22 @@ const game = {
 
 const player = new Player(game);
 
-// Create enemies spaced across the level
+// === Globals ===
+let coinCount = 0;
+let walletConnected = false;
+let gameWon = false;
+let gameState = "menu"; // 'menu' or 'playing'
+
+const startBtn = document.getElementById("startGame");
+const connectBtn = document.getElementById("connectWallet");
+
+// === Game Elements ===
 const enemies = [
   new Enemy(game, 400, groundLevel - 60),
   new Enemy(game, 700, groundLevel - 60),
   new Enemy(game, 1000, groundLevel - 60)
 ];
 
-// Create coins (spread throughout the level)
 const coins = [
   new Coin(150, groundLevel - 70),
   new Coin(300, groundLevel - 120),
@@ -38,9 +46,6 @@ const coins = [
   new Coin(1100, groundLevel - 120)
 ];
 
-let coinCount = 0;
-
-// Define end zone
 const endZone = {
   x: 1150,
   y: groundLevel - 60,
@@ -48,20 +53,73 @@ const endZone = {
   height: 60
 };
 
-let gameWon = false;
 
+
+// ===================== Music ==============================
+
+const menuMusic = new Audio('./assets/sfx/Nex_main_menu.mp3');
+menuMusic.loop = true;  // Enable looping
+menuMusic.volume = 0.6; // Optional: Set volume
+menuMusic.play();
+
+// Function to play music upon user interaction
+function playMenuMusic() {
+  menuMusic.play().catch(error => {
+    console.error("Error playing audio:", error);
+  });
+  // Remove the event listener after the music has been played once.
+  document.removeEventListener('click', playMenuMusic);
+  document.removeEventListener('keydown', playMenuMusic);
+}
+
+// Add event listeners for user interaction
+document.addEventListener('click', playMenuMusic);
+document.addEventListener('keydown', playMenuMusic);
+
+
+// ===================== Music ==============================
+
+
+
+// === Utility Functions ===
+function showToast(message, duration = 3000) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, duration);
+}
+
+// console.log("Initial gameState:", gameState);
+
+function updateBackground() {
+  if (gameState === "menu") {
+    document.body.style.backgroundImage = "url('../images/misc/nex-menu-bg.gif')";
+  } else if (gameState === "playing") {
+    document.body.style.background = "#4a90e2";
+  }
+}
+
+function fadeToBlack(callback) {
+  const overlay = document.getElementById('fade-overlay');
+  overlay.style.opacity = 1;
+  setTimeout(() => {
+    callback();
+    overlay.style.opacity = 0;
+  }, 800);
+}
+
+// === Main Game Loop ===
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Draw ground
   ctx.fillStyle = '#222';
   ctx.fillRect(0, groundLevel, canvas.width, 50);
 
-  // Update and draw player
   player.update(keys, enemies);
   player.draw(ctx);
 
-  // Update and draw enemies
   enemies.forEach((enemy) => {
     if (enemy.hp > 0) {
       enemy.update(player);
@@ -69,7 +127,6 @@ function gameLoop() {
     }
   });
 
-  // Draw and update coins
   coins.forEach((coin) => {
     if (!coin.collected) {
       if (coin.update(player)) {
@@ -79,16 +136,13 @@ function gameLoop() {
     }
   });
 
-  // Draw coin count
   ctx.fillStyle = 'yellow';
   ctx.font = '18px Arial';
   ctx.fillText(`Coins: ${coinCount}`, 10, 30);
 
-  // Draw end zone
   ctx.fillStyle = 'green';
   ctx.fillRect(endZone.x, endZone.y, endZone.width, endZone.height);
 
-  // Check level complete
   const playerRight = player.x + player.width;
   const playerBottom = player.y + player.height;
   if (
@@ -99,7 +153,6 @@ function gameLoop() {
     gameWon = true;
   }
 
-  // Game won message
   if (gameWon) {
     ctx.fillStyle = 'white';
     ctx.font = '30px Arial';
@@ -110,4 +163,31 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-requestAnimationFrame(gameLoop);
+// === Button Logic ===
+connectBtn.addEventListener("click", () => {
+  if (!walletConnected) {
+    walletConnected = true;
+    startBtn.disabled = false;
+    startBtn.style.opacity = 1;
+    startBtn.style.cursor = "pointer";
+    showToast("🦊 Wallet connected!");
+  }
+});
+
+startBtn.addEventListener("click", () => {
+  if (!walletConnected) {
+    showToast("Please connect your wallet first.");
+    return;
+  }
+
+  fadeToBlack(() => {
+    gameState = "playing";
+    updateBackground();
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("gameCanvas").style.display = "block";
+    requestAnimationFrame(gameLoop);
+  });
+});
+
+// === Initial Setup ===
+updateBackground(); // Set menu background on first load
