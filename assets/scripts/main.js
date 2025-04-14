@@ -55,12 +55,18 @@ const endZone = {
 
 
 
-// ===================== Music ==============================
+// ===================== Menu Music ==============================
 
 const menuMusic = new Audio('./assets/sfx/Nex_main_menu.mp3');
 menuMusic.loop = true;  // Enable looping
 menuMusic.volume = 0.6; // Optional: Set volume
 menuMusic.play();
+// ===================== Level Music ==============================
+
+const levelMusic = new Audio('./assets/sfx/Nex_level_theme.mp3');
+levelMusic.loop = true;
+levelMusic.volume = 0.6;
+
 
 // Function to play music upon user interaction
 function playMenuMusic() {
@@ -91,15 +97,19 @@ function showToast(message, duration = 3000) {
   }, duration);
 }
 
-// console.log("Initial gameState:", gameState);
 
 function updateBackground() {
   if (gameState === "menu") {
-    document.body.style.backgroundImage = "url('../images/misc/nex-menu-bg.gif')";
+    document.body.style.backgroundImage = "url('./assets/images/misc/nex-menu-bg.gif')";
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundRepeat = "no-repeat";
+    document.body.style.backgroundPosition = "center center";
   } else if (gameState === "playing") {
+    document.body.style.backgroundImage = "none";
     document.body.style.background = "#4a90e2";
   }
 }
+
 
 function fadeToBlack(callback) {
   const overlay = document.getElementById('fade-overlay');
@@ -183,6 +193,11 @@ startBtn.addEventListener("click", () => {
   fadeToBlack(() => {
     gameState = "playing";
     updateBackground();
+    menuMusic.pause();
+    menuMusic.currentTime = 0;
+    levelMusic.play().catch(err => {
+      console.error("Level music failed to play:", err);
+      });
     document.getElementById("menu").style.display = "none";
     document.getElementById("gameCanvas").style.display = "block";
     requestAnimationFrame(gameLoop);
