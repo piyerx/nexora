@@ -46,7 +46,7 @@ const coins = [
   new Coin(1100, groundLevel - 120)
 ];
 
-const endZone = {
+const endZone = { 
   x: 1150,
   y: groundLevel - 60,
   width: 40,
@@ -60,12 +60,11 @@ const endZone = {
 const menuMusic = new Audio('./assets/sfx/Nex_main_menu.mp3');
 menuMusic.loop = true;  // Enable looping
 menuMusic.volume = 0.6; // Optional: Set volume
-menuMusic.play();
 // ===================== Level Music ==============================
 
 const levelMusic = new Audio('./assets/sfx/Nex_level_theme.mp3');
 levelMusic.loop = true;
-levelMusic.volume = 0.6;
+levelMusic.volume = 0.6; 
 
 
 // Function to play music upon user interaction

@@ -11,7 +11,7 @@ class Player {
     this.velY = 0;
     this.speed = 3;
     this.jumpStrength = 12;
-    this.gravity = 0.6;
+    this.gravity = 0.5;
     this.grounded = false;
 
     this.hp = 100;
@@ -26,11 +26,11 @@ class Player {
 
   update(keys, enemies) {
     // Movement
-    if (keys["ArrowLeft"]) this.velX = -this.speed;
-    else if (keys["ArrowRight"]) this.velX = this.speed;
+    if (keys["ArrowLeft"] || keys["KeyA"]) this.velX = -this.speed;
+    else if (keys["ArrowRight"] || keys["KeyD"]) this.velX = this.speed;
     else this.velX = 0;
 
-    if (keys["Space"] && this.grounded) {
+    if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && this.grounded) {
       this.velY = -this.jumpStrength;
       this.grounded = false;
     }
