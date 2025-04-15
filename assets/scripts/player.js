@@ -24,8 +24,7 @@ class Player {
     ctx.fillRect(this.x, this.y, this.width, this.height);
   }
 
-  update(keys, enemies) {
-    // Movement
+  update(keys) {
     if (keys["ArrowLeft"] || keys["KeyA"]) this.velX = -this.speed;
     else if (keys["ArrowRight"] || keys["KeyD"]) this.velX = this.speed;
     else this.velX = 0;
@@ -35,24 +34,10 @@ class Player {
       this.grounded = false;
     }
 
-    // Attack on mouse click
-    document.onclick = () => {
-      enemies.forEach((enemy) => {
-        const inXRange = enemy.x >= this.x && enemy.x <= this.x + this.attackRange;
-        const inYRange = enemy.y + enemy.height >= this.y && enemy.y <= this.y + this.height;
-        if (inXRange && inYRange) {
-          enemy.hp -= this.attackDamage;
-          console.log('Enemy hit! HP left:', enemy.hp);
-        }
-      });
-    };
-
-    // Apply physics
     this.velY += this.gravity;
     this.x += this.velX;
     this.y += this.velY;
 
-    // Ground collision
     if (this.y + this.height > this.game.groundLevel) {
       this.y = this.game.groundLevel - this.height;
       this.velY = 0;

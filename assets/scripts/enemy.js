@@ -8,7 +8,7 @@ class Enemy {
     this.color = 'red';
 
     this.direction = 1; // 1 = right, -1 = left
-    this.speed = 1.5; // Movement speed
+    this.speed = 1; // Movement speed
 
     this.hp = 30;
     this.playerHitZoneActive = false;
