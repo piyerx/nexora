@@ -16,7 +16,7 @@ NEXORA - A monad based game.
 
 An engaging blockchain-powered game on **Monad** that delivers a fun and rewarding player experience.
 
-By leveraging Monad’s smart contract capabilities, the game securely tracks in-game achievements on-chain, while **Stellar** provides real token rewards and **Screenpipe** ensures gameplay authenticity.
+By leveraging Monad’s smart contract capabilities, the game securely tracks in-game achievements on-chain, while **Stellar** provides real token rewards
 
 NEXORA demonstrates how blockchain, led by Monad, can elevate traditional gaming through trustless achievement systems and real-world incentives.
 
@@ -58,9 +58,9 @@ The game empowers both players and developers by combining fun platformer mechan
 - [✅] **Monad:** _Your blockchain implementation_  
 - [ ] **Fluvio:** _Real-time data handling_  
 - [ ] **Base:** _AgentKit / OnchainKit / Smart Wallet usage_  
-- [✅] **Screenpipe:** _Screen-based analytics or workflows_  
+- [ ] **Screenpipe/Terminator:** _Screen-based analytics or workflows_  
 - [✅] **Stellar:** _Payments, identity, or token usage_
-*(Mark with ✅ if completed)*
+
 ---
 
 ## ✨ Key Features
@@ -88,8 +88,6 @@ Add images, GIFs, or screenshots if helpful!
 - [✅] **All members of the team completed the mandatory task - Followed at least 2 of our social channels and filled the form** (Details in Participant Manual)  
 - [ ] **All members of the team completed Bonus Task 1 - Sharing of Badges and filled the form (2 points)**  (Details in Participant Manual)
 - [✅] **All members of the team completed Bonus Task 2 - Signing up for Sprint.dev and filled the form (3 points)**  (Details in Participant Manual)
-
-*(Mark with ✅ if completed)*
 
 ---
 
