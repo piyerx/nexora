@@ -2,7 +2,7 @@
 
 # 🚀 Project Title
 
-NEXORA - A monad based game.
+NEXORA - A monad based arcade game.
 
 ---
 
