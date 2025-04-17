@@ -1,4 +1,3 @@
-// Add these lines at the very top of your index.js file
 document.body.style.margin = '0'
 document.body.style.overflow = 'hidden'
 document.documentElement.style.overflow = 'hidden'
@@ -6,7 +5,6 @@ document.body.style.height = '100vh'
 document.body.style.width = '100vw'
 
 // ============MUSIC===========
-// Add background music
 const levelMusic = new Audio('./music/Nex_level_theme.mp3')
 const menuMusic = new Audio('./music/Nex_main_menu.mp3')
 const buttonClickSound = new Audio('./music/nex-button-click.mp3')
@@ -20,13 +18,10 @@ menuMusic.volume = 0.4
 buttonClickSound.volume = 0.4
 coinSound.volume = 0.2
 
-// Play menu music immediately
 menuMusic.play()
 
-// Modified event listeners for music
 const startMusic = () => {
   levelMusic.play()
-  // Remove all event listeners after first trigger
   window.removeEventListener('click', startMusic)
   window.removeEventListener('keydown', handleKeyStart)
 }
@@ -36,15 +31,12 @@ const handleKeyStart = (event) => {
     startMusic()
   }
 }
-
 window.addEventListener('click', startMusic)
 window.addEventListener('keydown', handleKeyStart)
 // ============MUSIC===========
 
-
-
 const canvas = document.querySelector('canvas')
-canvas.style.display = 'block' // Removes any default spacing
+canvas.style.display = 'block'
 canvas.style.width = '100vw'
 canvas.style.height = '100vh'
 
@@ -182,8 +174,6 @@ const camera = {
   },
 }
 
-// Add after platform collision blocks setup and before player initialization
-// First, let's create a function to find middle platform positions
 const coins = []
 platformCollisions2D.forEach((row, y) => {
   let platformStart = -1
@@ -194,9 +184,8 @@ platformCollisions2D.forEach((row, y) => {
       if (platformStart === -1) platformStart = x
       platformLength++
     } else if (platformStart !== -1) {
-      // Place coin in middle of platform
       const middleX = platformStart + Math.floor(platformLength / 2)
-      coins.push(new Coin(middleX * 16, y * 16 - 20)) // -20 to place coin above platform
+      coins.push(new Coin(middleX * 16 + 5, y * 16 - 15))
       platformStart = -1
       platformLength = 0
     }
@@ -332,12 +321,12 @@ function animate() {
   
   // Coin counter on right
   c,textAlign = 'right'
-  c.fillText(`Coins: ${coinCount}`, canvas.width - 130, 50)
+  c.fillText(`Coins: ${coinCount}`, canvas.width - 140, 50)
   
   c.textAlign = 'center'
   c.fillText(`Use W | A | D for movement`, canvas.width / 2, canvas.height - 50)
-  c.textAlign = 'left'
-  c.fillText(`X: ${Math.round(player.position.x / 4)}, Y: ${Math.round(player.position.y / 4)}`, 30, 90)
+  // c.textAlign = 'left'
+  // c.fillText(`X: ${Math.round(player.position.x / 4)}, Y: ${Math.round(player.position.y / 4)}`, 30, 90)
 
   c.restore()
 
