@@ -24,16 +24,28 @@
     }
   }
   
-#menu-title {
+  
+  #menu-title {
     margin-top: -80px;
   font-family: 'Quantico', sans-serif;
-  font-size: 120px;
+  font-size: 150px;
   font-weight: bold;
   color: #00ffe7;
   margin-bottom: 12px;
   letter-spacing: 4px;
   text-shadow: 0 2px 16px #00ffe7, 0 1px 0 #222;
+  animation: textFlicker 0.7s infinite;
 }
+
+  @keyframes textFlicker {
+    0%, 100% {
+      text-shadow: 0 2px 16px #00ffe7, 0 1px 0 #222;
+    }
+    50% {
+      text-shadow: 0 2px 8px #00ffe7, 0 1px 0 #222;
+    }
+  }
+  
 #menu-subtitle {
     margin-top: -20px;
   font-family: 'Quantico', sans-serif;

@@ -191,14 +191,12 @@ platformCollisions2D.forEach((row, y) => {
     }
   })
   
-  // Handle platform that ends at array end
   if (platformStart !== -1) {
     const middleX = platformStart + Math.floor(platformLength / 2)
     coins.push(new Coin(middleX * 16, y * 16 - 20))
   }
 })
 
-// Add a single coin manually just above the ground
 coins.push(new Coin(550, 350))
 let coinCount = 0
 let gameTimer = 0
@@ -224,18 +222,16 @@ document.body.appendChild(menuOverlay)
 const startGameBtn = document.getElementById('start-game-btn')
 const connectWalletBtn = document.getElementById('connect-wallet-btn')
 
-// Modify start game button listener
 startGameBtn.addEventListener('click', () => {
   buttonClickSound.play()
   menuOverlay.style.display = 'none'
   gameStarted = true
   startTime = Date.now()
-  menuMusic.pause()  // Stop menu music
-  menuMusic.currentTime = 0  // Reset menu music position
-  levelMusic.play()  // Start game music
+  menuMusic.pause() 
+  menuMusic.currentTime = 0
+  levelMusic.play()  
 })
 
-// Remove the old music event listeners
 window.removeEventListener('click', startMusic)
 window.removeEventListener('keydown', handleKeyStart)
 
@@ -290,7 +286,6 @@ function animate() {
     else player.switchSprite('FallLeft')
   }
 
-  // Draw and check coins before c.restore()
   coins.forEach(coin => {
     if (!coin.collected) {
       coin.draw(c)
@@ -306,7 +301,20 @@ function animate() {
     }
   })
 
-  
+  // Show end screen if all coins collected
+  if (coinCount === 20 && !endScreenShown) {
+    endScreenShown = true;
+    gameStarted = false;
+    levelMusic.pause();
+    completionTime = (() => {
+      const timeInSeconds = Math.floor((Date.now() - startTime) / 1000);
+      const minutes = Math.floor(timeInSeconds / 60);
+      const seconds = timeInSeconds % 60;
+      return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    })();
+    setTimeout(showEndScreen, 400);
+    levelOver.play();
+  }
   c.restore()
   
   // HUD
@@ -337,7 +345,7 @@ function animate() {
 animate()
 
 window.addEventListener('keydown', (event) => {
-  if (!gameStarted) return  // Ignore all key inputs if game hasn't started
+  if (!gameStarted) return 
 
   switch (event.key) {
     case 'd':
@@ -354,15 +362,13 @@ window.addEventListener('keydown', (event) => {
   }
 })
 
-// Keep the Start Game button as the only way to start the game
 startGameBtn.addEventListener('click', () => {
   menuOverlay.style.display = 'none'
   gameStarted = true
   startTime = Date.now()
-  levelMusic.play()  // Start music when game starts
+  levelMusic.play()
 })
 
-// Remove the key-based music start
 window.removeEventListener('click', startMusic)
 window.removeEventListener('keydown', handleKeyStart)
 
@@ -380,8 +386,6 @@ window.addEventListener('keyup', (event) => {
 window.addEventListener('resize', () => {
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
-  
-  // Update scaled canvas dimensions
   scaledCanvas.width = canvas.width / 4
   scaledCanvas.height = canvas.height / 4
 })
@@ -395,12 +399,11 @@ howToPlayOverlay.style.cssText = `
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.5);
   justify-content: center;
   align-items: center;
   z-index: 1000;
 `
-
 const howToPlayImage = document.createElement('img')
 howToPlayImage.src = './img/background.png'
 howToPlayImage.style.cssText = `
@@ -409,11 +412,9 @@ howToPlayImage.style.cssText = `
   object-fit: contain;
   transform: scale(1.5);
 `
-
 howToPlayOverlay.appendChild(howToPlayImage)
 document.body.appendChild(howToPlayOverlay)
 
-// Add click handlers
 document.getElementById('how-to-play').addEventListener('click', (e) => {
   e.stopPropagation()
   buttonClickSound.play()
@@ -424,3 +425,68 @@ howToPlayOverlay.addEventListener('click', () => {
   buttonClickSound.play()
   howToPlayOverlay.style.display = 'none'
 })
+
+
+let endScreenShown = false
+let completionTime = null
+
+function showEndScreen() {
+  if (document.getElementById('end-screen-overlay')) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'end-screen-overlay';
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgb(0, 0, 0);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1);
+  `;
+  overlay.innerHTML = `
+    <div style=\"font-family: 'Quantico', sans-serif; color:rgb(255, 255, 255); font-size: 80px; font-weight: bold; margin-bottom: 16px; opacity:0; transition:opacity 0.5s 0.3s;\">Stage Complete</div>
+    <div style=\"font-family: 'Quantico', sans-serif; color: #fff; font-size: 32px; margin-bottom: 36px; opacity:0; transition:opacity 0.5s 0.5s;\">Can you do this faster than <span id='completion-time'>${completionTime}</span>?</div>
+    <div id=\"retry-btn\" style=\"font-family: 'Quantico', sans-serif; color: #00ffe7; font-size: 36px; cursor: pointer; margin-top: 24px; opacity:0; transition:opacity 0.5s 0.7s;\">Retry</div>
+  `;
+  document.body.appendChild(overlay);
+
+  setTimeout(() => {
+    overlay.style.opacity = '1';
+    const children = overlay.children;
+    for (let i = 0; i < children.length; i++) {
+      setTimeout(() => { children[i].style.opacity = '1'; }, 200 + i * 120);
+    }
+  }, 30);
+  document.getElementById('retry-btn').onclick = () => {
+    overlay.remove();
+    resetGame();
+  };
+}
+
+function resetGame() {
+  // Reset all coins
+  coins.forEach(coin => coin.collected = false);
+  coinCount = 0;
+  // Reset player position
+  player.position.x = 100;
+  player.position.y = 300;
+  player.velocity.x = 0;
+  player.velocity.y = 0;
+  player.lastDirection = 'right';
+  // Reset camera
+  camera.position.x = 0;
+  camera.position.y = -backgroundImageHeight + scaledCanvas.height;
+  // Reset timer
+  startTime = Date.now();
+  gameStarted = true;
+  endScreenShown = false;
+  completionTime = null;
+  levelMusic.currentTime = 0;
+  levelMusic.play();
+}
