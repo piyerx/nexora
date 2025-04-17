@@ -212,6 +212,7 @@ menuOverlay.innerHTML = `
   <div id="menu-title">NEXORA</div>
   <div id="menu-subtitle">Built on MONAD</div>
   <button id="start-game-btn" class="menu-btn">Start Game</button>
+  <div id="how-to-play" style="font-family: 'Quantico', sans-serif; color: white; font-size: 24px; cursor: pointer;">How To Play?</div>
   <button id="connect-wallet-btn" class="menu-btn">Connect Wallet</button>
   <div class="credits-container">
     <p class="credits">Built with ❤️ for HackHazards 2025</p>
@@ -311,7 +312,7 @@ function animate() {
   // HUD
   c.save()
   c.fillStyle = 'white'
-  c.font = '30px Quantico'
+  c.font = '40px Quantico'
   // Timer on left
   const timeInSeconds = Math.floor((Date.now() - startTime) / 1000)
   const minutes = Math.floor(timeInSeconds / 60)
@@ -321,8 +322,8 @@ function animate() {
   
   // Coin counter on right
   c,textAlign = 'right'
-  c.fillText(`Coins: ${coinCount}`, canvas.width - 140, 50)
-  
+  c.fillText(`Coins: ${coinCount}/20`, canvas.width - 250, 50)
+  c.font = '20px Quantico'
   c.textAlign = 'center'
   c.fillText(`Use W | A | D for movement`, canvas.width / 2, canvas.height - 50)
   // c.textAlign = 'left'
@@ -383,4 +384,43 @@ window.addEventListener('resize', () => {
   // Update scaled canvas dimensions
   scaledCanvas.width = canvas.width / 4
   scaledCanvas.height = canvas.height / 4
+})
+
+//HOW TO PLAY Section
+const howToPlayOverlay = document.createElement('div')
+howToPlayOverlay.style.cssText = `
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`
+
+const howToPlayImage = document.createElement('img')
+howToPlayImage.src = './img/background.png'
+howToPlayImage.style.cssText = `
+  max-width: 80%;
+  max-height: 80%;
+  object-fit: contain;
+  transform: scale(1.5);
+`
+
+howToPlayOverlay.appendChild(howToPlayImage)
+document.body.appendChild(howToPlayOverlay)
+
+// Add click handlers
+document.getElementById('how-to-play').addEventListener('click', (e) => {
+  e.stopPropagation()
+  buttonClickSound.play()
+  howToPlayOverlay.style.display = 'flex'
+})
+
+howToPlayOverlay.addEventListener('click', () => {
+  buttonClickSound.play()
+  howToPlayOverlay.style.display = 'none'
 })
