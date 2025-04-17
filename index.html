@@ -1,44 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NEXORA</title>
-
-  <!-- Google Fonts: Quantico -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-
-  <!-- Favicon -->
+  <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/png" href="favicon.png">
-
-  <!-- Stylesheet -->
-  <link rel="stylesheet" href="style.css" />
+  <link href="menu.css" rel="stylesheet" />
 </head>
-<body>
+<style>
+  body {
+    background: black;
+  }
+</style>
+<canvas></canvas>
 
-  <!-- Toast Notification -->
-  <div id="toast"></div>
-
-  <!-- Fade Overlay for Transitions -->
-  <div id="fade-overlay"></div>
-
-  <!-- Game Menu -->
-  <div id="menu">
-    <h1>NEXORA</h1>
-    <p class="subtitle">Built on MONAD</p>
-    <button id="startGame" disabled><b>START GAME</b></button>
-    <button id="connectWallet"><b>🦊 CONNECT WALLET</b></button>
-    <p class="credits">Built with ❤️ for HackHazards 2025</p>
-    <p class="subCredits">Bandana | Neha | Piyush | Priyanshu</p>
-  </div>
-
-  <!-- Game Canvas -->
-  <canvas id="gameCanvas"></canvas>
-
-  <!-- Main Game Script (as module) -->
-  <script type="module" src="assets/scripts/main.js"></script>
-
-</body>
-</html>
+<script src="./js/utils.js"></script>
+<script src="./js/classes/CollisionBlock.js"></script>
+<script src="./js/classes/Sprite.js"></script>
+<script src="./js/classes/Player.js"></script>
+<script src="./js/data/collisions.js"></script>
+<script src="./js/classes/Coin.js"></script>
+<script src="index.js"></script>

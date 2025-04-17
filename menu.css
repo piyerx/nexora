@@ -1,0 +1,89 @@
+#menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('img/background.png');
+    background-size: cover;
+    backdrop-filter: blur(48px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: backgroundScale 10s infinite alternate ease-in-out;
+}
+  
+  @keyframes backgroundScale {
+    0% {
+      background-size: 100% 100%;
+    }
+    100% {
+      background-size: 120% 120%;
+    }
+  }
+  
+#menu-title {
+    margin-top: -80px;
+  font-family: 'Quantico', sans-serif;
+  font-size: 120px;
+  font-weight: bold;
+  color: #00ffe7;
+  margin-bottom: 12px;
+  letter-spacing: 4px;
+  text-shadow: 0 2px 16px #00ffe7, 0 1px 0 #222;
+}
+#menu-subtitle {
+    margin-top: -20px;
+  font-family: 'Quantico', sans-serif;
+  font-size: 32px;
+  color: #fff;
+  margin-bottom: 36px;
+  letter-spacing: 2px;
+  text-shadow: 0 1px 8px #00ffe7, 0 1px 0 #222;
+}
+.credits-container {
+  position: absolute;
+  bottom: 32px;
+  left: 0;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+.credits {
+  font-family: 'Quantico', sans-serif;
+  color: #a4fff6;
+  font-size: 22px;
+  margin: 0;
+  /* text-shadow: 0 1px 8px #222; */
+}
+.subCredits {
+  font-family: 'Quantico', sans-serif;
+  color: #fff;
+  font-size: 18px;
+  margin: 0;
+  letter-spacing: 1px;
+  /* text-shadow: 0 1px 8px #222; */
+}
+.menu-btn {
+  font-family: 'Quantico', sans-serif;
+  font-weight: bold;
+  font-size: 28px;
+  padding: 18px 60px;
+  margin: 18px 0;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #00ffe7 0%, #0077ff 100%);
+  color: #222;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(0,255,231,0.2);
+  transition: background 0.2s, transform 0.2s;
+}
+.menu-btn:hover {
+  background: linear-gradient(90deg, #0077ff 0%, #00ffe7 100%);
+  transform: scale(1.06);
+  box-shadow: 0 1px 8px #77fff1, 0 1px 0 #ffffff;
+}
