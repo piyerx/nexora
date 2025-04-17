@@ -4,7 +4,9 @@ document.documentElement.style.overflow = 'hidden'
 document.body.style.height = '100vh'
 document.body.style.width = '100vw'
 
-// ============MUSIC===========
+// =======================
+// 🎵 MUSIC SECTION
+// =======================
 const levelMusic = new Audio('./music/Nex_level_theme.mp3')
 const menuMusic = new Audio('./music/Nex_main_menu.mp3')
 const buttonClickSound = new Audio('./music/nex-button-click.mp3')
@@ -32,10 +34,15 @@ const handleKeyStart = (event) => {
   }
 }
 window.addEventListener('click', startMusic)
+// =======================
+// ⌨️ INPUT HANDLERS
+// =======================
 window.addEventListener('keydown', handleKeyStart)
-// ============MUSIC===========
 
-const canvas = document.querySelector('canvas')
+// =======================
+// 🧱 CANVAS SETUP
+// =======================
+canvas = document.querySelector('canvas')
 canvas.style.display = 'block'
 canvas.style.width = '100vw'
 canvas.style.height = '100vh'
@@ -95,6 +102,9 @@ platformCollisions2D.forEach((row, y) => {
 
 const gravity = 0.1
 
+// ================================
+// 🧍 CHARACTER & BACKGROUND SETUP
+// ================================
 const player = new Player({
   position: {
     x: 100,
@@ -196,14 +206,19 @@ platformCollisions2D.forEach((row, y) => {
     coins.push(new Coin(middleX * 16, y * 16 - 20))
   }
 })
-
 coins.push(new Coin(550, 350))
+
+// ==================
+// 🎮 GAME STATE
+// ==================
 let coinCount = 0
 let gameTimer = 0
 let startTime = null
 let gameStarted = false
 
-// ===== MENU OVERLAY CREATION =====
+// ===========================
+// 🎮 MENU UI OVERLAY + LOGIC
+// ===========================
 const menuOverlay = document.createElement('div')
 menuOverlay.id = 'menu-overlay'
 menuOverlay.innerHTML = `
@@ -240,8 +255,10 @@ connectWalletBtn.addEventListener('click', () => {
   // Placeholder for wallet connection logic
   alert('Wallet connection coming soon!')
 })
-// ===== END MENU OVERLAY CREATION =====
 
+// =======================
+// 🔁 ANIMATE LOOP
+// =======================
 function animate() {
   window.requestAnimationFrame(animate)
   c.fillStyle = 'white'
@@ -344,6 +361,9 @@ function animate() {
 
 animate()
 
+// =======================
+// ⌨️ INPUT HANDLERS
+// =======================
 window.addEventListener('keydown', (event) => {
   if (!gameStarted) return 
 
@@ -390,7 +410,9 @@ window.addEventListener('resize', () => {
   scaledCanvas.height = canvas.height / 4
 })
 
-//HOW TO PLAY Section
+// =======================
+// 🎮 HOW TO PLAY POPUP
+// =======================
 const howToPlayOverlay = document.createElement('div')
 howToPlayOverlay.style.cssText = `
   display: none;
@@ -430,6 +452,9 @@ howToPlayOverlay.addEventListener('click', () => {
 let endScreenShown = false
 let completionTime = null
 
+// =======================
+// 🏁 END SCREEN LOGIC
+// =======================
 function showEndScreen() {
   if (document.getElementById('end-screen-overlay')) return;
   const overlay = document.createElement('div');
