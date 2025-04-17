@@ -405,12 +405,12 @@ howToPlayOverlay.style.cssText = `
   z-index: 1000;
 `
 const howToPlayImage = document.createElement('img')
-howToPlayImage.src = './img/background.png'
+howToPlayImage.src = './img/How_to_play_Nexora.png'
 howToPlayImage.style.cssText = `
   max-width: 80%;
   max-height: 80%;
   object-fit: contain;
-  transform: scale(1.5);
+  transform: scale(1.2);
 `
 howToPlayOverlay.appendChild(howToPlayImage)
 document.body.appendChild(howToPlayOverlay)
