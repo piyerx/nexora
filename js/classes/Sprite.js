@@ -22,8 +22,8 @@ class Sprite {
     this.elapsedFrames = 0
   }
 
-  draw() {
-    if (!this.image) return
+  draw(context) {
+    if (!this.image || !this.loaded) return;
 
     const cropbox = {
       position: {
@@ -32,9 +32,9 @@ class Sprite {
       },
       width: this.image.width / this.frameRate,
       height: this.image.height,
-    }
+    };
 
-    c.drawImage(
+    context.drawImage(
       this.image,
       cropbox.position.x,
       cropbox.position.y,
@@ -44,11 +44,11 @@ class Sprite {
       this.position.y,
       this.width,
       this.height
-    )
+    );
   }
 
-  update() {
-    this.draw()
+  update(context) {
+    this.draw(context)
     this.updateFrames()
   }
 

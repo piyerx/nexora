@@ -1,8 +1,13 @@
+import { contractAddress, contractABI } from './contract/config.js';
+
 document.body.style.margin = '0'
 document.body.style.overflow = 'hidden'
 document.documentElement.style.overflow = 'hidden'
 document.body.style.height = '100vh'
 document.body.style.width = '100vw'
+
+let userWallet = null;
+let contract = null;
 
 // =======================
 // 🎵 MUSIC SECTION
@@ -12,6 +17,7 @@ const menuMusic = new Audio('./music/Nex_main_menu.mp3')
 const buttonClickSound = new Audio('./music/nex-button-click.mp3')
 const coinSound = new Audio('./music/nex-coin.mp3')
 const levelOver = new Audio('./music/nex-level-complete.mp3')
+const achMusic = new Audio('./music/nex-achievement.mp3')
 
 levelMusic.loop = true
 menuMusic.loop = true
@@ -19,6 +25,7 @@ levelMusic.volume = 0.5
 menuMusic.volume = 0.4
 buttonClickSound.volume = 0.4
 coinSound.volume = 0.2
+achMusic.volume = 0.4
 
 menuMusic.play()
 
@@ -42,7 +49,8 @@ window.addEventListener('keydown', handleKeyStart)
 // =======================
 // 🧱 CANVAS SETUP
 // =======================
-canvas = document.querySelector('canvas')
+
+const canvas = document.querySelector('canvas')
 canvas.style.display = 'block'
 canvas.style.width = '100vw'
 canvas.style.height = '100vh'
@@ -250,11 +258,123 @@ startGameBtn.addEventListener('click', () => {
 window.removeEventListener('click', startMusic)
 window.removeEventListener('keydown', handleKeyStart)
 
-connectWalletBtn.addEventListener('click', () => {
-  buttonClickSound.play()
-  // Placeholder for wallet connection logic
-  alert('Wallet connection coming soon!')
-})
+// Replace the placeholder wallet connection logic
+connectWalletBtn.addEventListener('click', async () => {
+  buttonClickSound.play();
+  try {
+    if (typeof window.ethereum === 'undefined') {
+      alert('Please install MetaMask or another Ethereum wallet extension and refresh the page.');
+      return;
+    }
+
+    const accounts = await window.ethereum.request({ 
+      method: 'eth_requestAccounts' 
+    });
+    userWallet = accounts[0];
+    
+    // Initialize contract
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    contract = new ethers.Contract(
+      contractAddress,
+      contractABI,
+      signer
+    );
+
+    connectWalletBtn.textContent = 'Connected!';
+    connectWalletBtn.style.background = 'linear-gradient(90deg, #00ff95 0%, #00ffe7 100%)';
+    await verifyAchievements(); // Fetch achievements from Monad after connecting the wallet
+  } catch (error) {
+    console.error('Error connecting wallet:', error);
+    let message = 'Failed to connect wallet. Please try again.';
+    if (error && error.message && error.message.includes('Internal JSON-RPC error')) {
+      message = 'Wallet connection failed due to a network or contract configuration issue. Please ensure you are connected to the correct network and the contract is deployed.';
+    }
+    alert(message);
+  }
+});
+
+// =======================
+// 🎖️ GAME ACHIEVEMENTS
+// =======================
+const achievements = {
+  coinCollector: { earned: false, image: './img/achievements/ach_coin_collector.png' },
+  speedDemon: { earned: false, image: './img/achievements/ach_speed_demon.png' },
+  chillPacer: { earned: false, image: './img/achievements/ach_chill_pacer.png' },
+  nexoFlash: { earned: false, image: './img/achievements/ach_nexo_flash.png' },
+  levelComplete: { earned: false, image: './img/achievements/ach_stage_complete.png' }
+};
+
+async function verifyAchievements() {
+  if (!contract || !userWallet) return;
+  try {
+    // Check network before making contract call
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const network = await provider.getNetwork();
+    // Replace with your expected chainId (e.g., 1 for Ethereum Mainnet, 5 for Goerli, etc.)
+    const expectedChainId = 10143; // CHANGE THIS to your deployed contract's chainId
+    if (network.chainId !== expectedChainId) {
+      alert(`Please switch your wallet to the correct network (chainId: ${expectedChainId}). Current: ${network.chainId}`);
+      return;
+    }
+    const earnedAchievements = await contract.getPlayerAchievements(userWallet);
+    console.log('Achievements stored on Monad:', earnedAchievements);
+    earnedAchievements.forEach(achId => {
+      if (achievements[achId]) {
+        achievements[achId].earned = true;
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching achievements:', error);
+    let message = 'Could not fetch achievements from the blockchain.';
+    if (error && error.code === 'CALL_EXCEPTION') {
+      message = 'Failed to fetch achievements: contract call reverted. Please check if you are on the correct network and the contract is deployed with the correct ABI/address.';
+    } else if (error && error.message && error.message.includes('network does not match')) {
+      message = 'Your wallet is connected to the wrong network. Please switch to the correct network and try again.';
+    }
+    alert(message);
+  }
+}
+
+// Add achievement tracking to blockchain
+async function trackAchievement(achievementId) {
+  if (!contract || !userWallet) return;
+  
+  try {
+    const tx = await contract.unlockAchievement(achievementId);
+    await tx.wait();
+  } catch (error) {
+    console.error('Error tracking achievement:', error);
+  }
+}
+
+// Update showAchievement function to include blockchain tracking
+function showAchievement(achievementId) {
+  if (achievements[achievementId].earned) return;
+  
+  achMusic.currentTime = 0;
+  achMusic.play();
+  
+  const notification = document.createElement('div');
+  notification.className = 'achievement-notification';
+  notification.innerHTML = `<img src="${achievements[achievementId].image}">`;
+  document.body.appendChild(notification);
+  
+  setTimeout(() => notification.style.bottom = '20px', 100);
+  setTimeout(() => {
+    notification.style.bottom = '-80px';
+    setTimeout(() => notification.remove(), 500);
+  }, 4000);
+
+  achievements[achievementId].earned = true;
+  trackAchievement(achievementId); // Add blockchain tracking
+}
+function resetAchievements() {
+  Object.keys(achievements).forEach(key => {
+    achievements[key].earned = false;
+  });
+}
+
 
 // =======================
 // 🔁 ANIMATE LOOP
@@ -271,11 +391,11 @@ function animate() {
   c.save()
   c.scale(4, 4)
   c.translate(camera.position.x, camera.position.y)
-  background.update()
+  background.update(c)
   
   
   player.checkForHorizontalCanvasCollision()
-  player.update()
+  player.update(c)
 
   player.velocity.x = 0
   if (keys.d.pressed) {
@@ -303,6 +423,7 @@ function animate() {
     else player.switchSprite('FallLeft')
   }
 
+  // In your animate function, after the coin collection logic:
   coins.forEach(coin => {
     if (!coin.collected) {
       coin.draw(c)
@@ -313,13 +434,36 @@ function animate() {
         coin.collected = true
         coinCount++
         coinSound.play()
-        console.log('Coins collected:', coinCount)
+        
+        // Achievement: Every 5 coins
+        if (coinCount % 5 === 0) {
+          showAchievement('coinCollector');
+        }
+        
+        // Check time-based achievements
+        const timeInSeconds = Math.floor((Date.now() - startTime) / 1000);
+        
+        // Achievement: Chill Pacer (10 or fewer coins in 60 seconds)
+        if (timeInSeconds >= 60 && coinCount <= 10) {
+          showAchievement('chillPacer');
+        }
+        
+        // Achievement: Speed Demon (All 20 coins under 30 seconds)
+        if (coinCount === 20 && timeInSeconds <= 30) {
+          showAchievement('speedDemon');
+        }
+        
+        // Achievement: Nexo Flash (All 20 coins under 15 seconds)
+        if (coinCount === 20 && timeInSeconds <= 15) {
+          showAchievement('nexoFlash');
+        }
       }
     }
   })
 
-  // Show end screen if all coins collected
+  // Level Complete achievement (already in your end screen logic)
   if (coinCount === 20 && !endScreenShown) {
+    showAchievement('levelComplete');
     endScreenShown = true;
     gameStarted = false;
     levelMusic.pause();
@@ -346,8 +490,8 @@ function animate() {
   c.fillText(`Time: ${formattedTime}`, 30, 50)
   
   // Coin counter on right
-  c,textAlign = 'right'
-  c.fillText(`Coins: ${coinCount}/20`, canvas.width - 250, 50)
+  c.textAlign = 'right'
+  c.fillText(`Coins: ${coinCount}/20`, canvas.width - 40, 50)
   c.font = '20px Quantico'
   c.textAlign = 'center'
   c.fillText(`Use W | A | D for movement`, canvas.width / 2, canvas.height - 50)
@@ -514,4 +658,5 @@ function resetGame() {
   completionTime = null;
   levelMusic.currentTime = 0;
   levelMusic.play();
+  resetAchievements();
 }

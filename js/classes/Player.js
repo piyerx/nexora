@@ -123,8 +123,9 @@ class Player extends Sprite {
     }
   }
 
-  update() {
+  update(context) {
     this.updateFrames()
+    this.draw(context)
     this.updateHitbox()
 
     this.updateCamerabox()
@@ -148,7 +149,7 @@ class Player extends Sprite {
     //   this.hitbox.height
     // )
 
-    this.draw()
+    this.draw(context)
 
     this.position.x += this.velocity.x
     this.updateHitbox()
@@ -253,3 +254,4 @@ class Player extends Sprite {
     }
   }
 }
+const gravity = 0.1;

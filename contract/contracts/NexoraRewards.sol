@@ -71,4 +71,28 @@ contract NexoraRewards {
         }
         str = string(bstr);
     }
+
+    // Returns a list of achievement IDs for the player
+    function getPlayerAchievements(address player) public view returns (string[] memory) {
+        uint256 count = 0;
+        string[5] memory allAchievements = ["coinCollector", "speedDemon", "chillPacer", "nexoFlash", "levelComplete"];
+        bool[5] memory achieved;
+        if (smallRewards[player] > 0) achieved[0] = true; // coinCollector
+        if (smallRewards[player] > 0) achieved[2] = true; // chillPacer (simplified)
+        if (bigRewards[player] > 0) achieved[4] = true; // levelComplete
+        if (smallRewards[player] > 2) achieved[1] = true; // speedDemon (example: 3+ small rewards)
+        if (bigRewards[player] > 1) achieved[3] = true; // nexoFlash (example: 2+ big rewards)
+        for (uint256 i = 0; i < 5; i++) {
+            if (achieved[i]) count++;
+        }
+        string[] memory unlocked = new string[](count);
+        uint256 idx = 0;
+        for (uint256 i = 0; i < 5; i++) {
+            if (achieved[i]) {
+                unlocked[idx] = allAchievements[i];
+                idx++;
+            }
+        }
+        return unlocked;
+    }
 }
