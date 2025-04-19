@@ -1,4 +1,5 @@
 import { contractAddress, contractABI } from './contract/config.js';
+import { queueAchievement, getQueuedAchievements, clearQueue } from './js/achievementQueue.js'
 
 document.body.style.margin = '0'
 document.body.style.overflow = 'hidden'
@@ -6,8 +7,11 @@ document.documentElement.style.overflow = 'hidden'
 document.body.style.height = '100vh'
 document.body.style.width = '100vw'
 
+let endScreenShown = false;
+let completionTime = null
 let userWallet = null;
 let contract = null;
+let verifiedAchievements = {};
 
 // =======================
 // 🎵 MUSIC SECTION
@@ -232,16 +236,92 @@ menuOverlay.id = 'menu-overlay'
 menuOverlay.innerHTML = `
   <div id="menu-title">NEXORA</div>
   <div id="menu-subtitle">Built on MONAD</div>
+  <button id="achievements-btn" class="menu-btn" style="display:none;position:absolute;top:32px;right:48px;width:auto;padding:10px 32px;font-size:20px;z-index:1100;">My Achievements</button>
   <button id="start-game-btn" class="menu-btn">Start Game</button>
-  <div id="how-to-play" style="font-family: 'Quantico', sans-serif; color: white; font-size: 24px; cursor: pointer;">How To Play?</div>
   <button id="connect-wallet-btn" class="menu-btn">Connect Wallet</button>
   <div class="credits-container">
     <p class="credits">Built with ❤️ for HackHazards 2025</p>
     <p class="subCredits">Bandana | Neha | Piyush | Priyanshu</p>
   </div>
-`
-document.body.appendChild(menuOverlay)
+`;
+document.body.appendChild(menuOverlay);
 
+// Achievement Overlay Logic
+let achievementsOverlay = null;
+function createAchievementsOverlay() {
+  if (achievementsOverlay) return achievementsOverlay;
+  achievementsOverlay = document.createElement('div');
+  achievementsOverlay.id = 'achievements-overlay';
+  achievementsOverlay.style.display = 'none';
+  achievementsOverlay.style.position = 'fixed';
+  achievementsOverlay.style.top = '0';
+  achievementsOverlay.style.left = '0';
+  achievementsOverlay.style.width = '100vw';
+  achievementsOverlay.style.height = '100vh';
+  achievementsOverlay.style.background = 'rgba(0,0,0,0.7)';
+  achievementsOverlay.style.backdropFilter = 'blur(14px)';
+  achievementsOverlay.style.zIndex = '2000';
+  achievementsOverlay.style.display = 'flex';
+  achievementsOverlay.style.alignItems = 'center';
+  achievementsOverlay.style.justifyContent = 'center';
+  achievementsOverlay.innerHTML = `
+    <div id="achievements-modal" style="background:rgba(0,0,0,0.85);border-radius:24px;padding:36px 48px;box-shadow:0 4px 32px #00ffe7;max-width:600px;width:90vw;max-height:80vh;overflow-y:auto;display:flex;flex-direction:column;align-items:center;">
+      <div class="achievement-section-title" style="margin-bottom:18px;">Your Achievements</div>
+      <div id="achievements-list-modal" style="display:flex;flex-wrap:wrap;gap:24px 32px;justify-content:center;"></div>
+    </div>
+  `;
+  document.body.appendChild(achievementsOverlay);
+  achievementsOverlay.addEventListener('click', (e) => {
+    if (e.target === achievementsOverlay) {
+      achievementsOverlay.style.display = 'none';
+    }
+  });
+  return achievementsOverlay;
+}
+function openAchievementsOverlay() {
+  createAchievementsOverlay();
+  // Populate achievements
+  const list = achievementsOverlay.querySelector('#achievements-list-modal');
+  list.innerHTML = '';
+  Object.entries(achievements).forEach(([id, data]) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'achievement-item';
+    const img = document.createElement('img');
+    img.src = data.image;
+    img.alt = id;
+    if (!(verifiedAchievements[id] > 0)) {
+      img.style.filter = 'grayscale(1) opacity(0.5)';
+      img.style.opacity = '0.5';
+    }
+    wrapper.appendChild(img);
+    if (verifiedAchievements[id] > 0) {
+      const badge = document.createElement('span');
+      badge.className = 'badge';
+      badge.textContent = verifiedAchievements[id];
+      wrapper.appendChild(badge);
+    }
+    const label = document.createElement('div');
+    label.className = 'ach-label';
+    label.textContent = id;
+    wrapper.appendChild(label);
+    list.appendChild(wrapper);
+  });
+  achievementsOverlay.style.display = 'flex';
+}
+
+const achievementsOverlayBtn = document.getElementById('achievements-btn');
+if (achievementsOverlayBtn) {
+  achievementsOverlayBtn.addEventListener('click', (e) => {
+    buttonClickSound.play();
+    openAchievementsOverlay();
+  });
+}
+
+document.getElementById('achievements-btn').addEventListener('click', (e) => {
+  buttonClickSound.play();
+  openAchievementsOverlay();
+});
+// Remove the global achievementsOverlay.addEventListener('click', ...) since it's now inside the creation function
 const startGameBtn = document.getElementById('start-game-btn')
 const connectWalletBtn = document.getElementById('connect-wallet-btn')
 
@@ -271,8 +351,6 @@ connectWalletBtn.addEventListener('click', async () => {
       method: 'eth_requestAccounts' 
     });
     userWallet = accounts[0];
-    
-    // Initialize contract
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     contract = new ethers.Contract(
@@ -280,10 +358,10 @@ connectWalletBtn.addEventListener('click', async () => {
       contractABI,
       signer
     );
-
     connectWalletBtn.textContent = 'Connected!';
     connectWalletBtn.style.background = 'linear-gradient(90deg, #00ff95 0%, #00ffe7 100%)';
-    await verifyAchievements(); // Fetch achievements from Monad after connecting the wallet
+    document.getElementById('achievements-btn').style.display = 'block';
+    await verifyAchievements();
   } catch (error) {
     console.error('Error connecting wallet:', error);
     let message = 'Failed to connect wallet. Please try again.';
@@ -294,6 +372,65 @@ connectWalletBtn.addEventListener('click', async () => {
   }
 });
 
+async function verifyAchievements() {
+  if (!contract || !userWallet) return;
+  try {
+    const achArr = await contract.getPlayerAchievements(userWallet);
+    // Count occurrences of each achievement
+    verifiedAchievements = {};
+    achArr.forEach(id => {
+      if (!verifiedAchievements[id]) verifiedAchievements[id] = 0;
+      verifiedAchievements[id]++;
+    });
+    updateAchievementsUI();
+  } catch (e) {
+    console.error('Error fetching achievements from Monad:', e);
+  }
+}
+
+function updateAchievementsUI() {
+  const section = document.getElementById('achievements-section');
+  const list = document.getElementById('achievements-list');
+  if (!section || !list) return;
+  if (!userWallet || Object.keys(verifiedAchievements).length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+  list.innerHTML = '';
+  Object.entries(achievements).forEach(([id, data]) => {
+    const count = verifiedAchievements[id] || 0;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'achievement-item';
+    wrapper.innerHTML = `<img src="${data.image}" style="filter:${count>0?'none':'grayscale(1)'};opacity:${count>0?1:0.4};"><span class="badge"${count>0?'':' hidden'}>x${count}</span><span class="ach-label">${data.label||id}</span>`;
+    list.appendChild(wrapper);
+  });
+}
+
+// Add achievements section to menu overlay if not present
+function ensureAchievementsSection() {
+  let section = document.getElementById('achievements-section');
+  if (!section) {
+    section = document.createElement('div');
+    section.id = 'achievements-section';
+    section.className = 'achievement-section';
+    section.innerHTML = `<div class="achievement-section-title">Achievements</div><div id="achievements-list"></div>`;
+    const menuOverlay = document.getElementById('menu-overlay');
+    if (menuOverlay) {
+      menuOverlay.insertBefore(section, menuOverlay.children[2] || null);
+    }
+  }
+}
+
+// After wallet connection and achievements are fetched:
+async function fetchAndDisplayAchievements() {
+  // Fetch verifiedAchievements from Monad contract (pseudo-code, replace with actual logic)
+  // verifiedAchievements = await fetchVerifiedAchievements(userWallet);
+  ensureAchievementsSection();
+  updateAchievementsUI();
+}
+// Example: Call fetchAndDisplayAchievements after wallet is connected and achievements are loaded
+// fetchAndDisplayAchievements();
 // =======================
 // 🎖️ GAME ACHIEVEMENTS
 // =======================
@@ -305,63 +442,39 @@ const achievements = {
   levelComplete: { earned: false, image: './img/achievements/ach_stage_complete.png' }
 };
 
-async function verifyAchievements() {
-  if (!contract || !userWallet) return;
-  
-  try {
-    console.log("Checking achievements for wallet:", userWallet);
-    const earnedAchievements = await contract.getPlayerAchievements(userWallet);
-    console.log('Raw achievements response:', earnedAchievements);
-    
-    earnedAchievements.forEach(achId => {
-      if (achievements[achId]) {
-        achievements[achId].earned = true;
-      }
-    });
-  } catch (error) {
-    console.error('Error details:', {
-      message: error.message,
-      code: error.code,
-      data: error.data,
-      transaction: error.transaction
-    });
-    throw error;
-  }
-}
+// Achievement pop-up queue logic
+const achievementPopupQueue = [];
+let achievementPopupActive = false;
 
-// Add achievement tracking to blockchain
-async function trackAchievement(achievementId) {
-  if (!contract || !userWallet) return;
-  
-  try {
-    const tx = await contract.unlockAchievement(achievementId);
-    await tx.wait();
-  } catch (error) {
-    console.error('Error tracking achievement:', error);
-  }
-}
-
-// Update showAchievement function to include blockchain tracking
 function showAchievement(achievementId) {
   if (achievements[achievementId].earned) return;
-  
+  achievements[achievementId].earned = true;
+  queueAchievement(achievementId); // Queue for blockchain processing
+  achievementPopupQueue.push(achievementId);
+  processAchievementPopupQueue();
+}
+
+function processAchievementPopupQueue() {
+  if (achievementPopupActive || achievementPopupQueue.length === 0) return;
+  achievementPopupActive = true;
+  const achievementId = achievementPopupQueue.shift();
   achMusic.currentTime = 0;
   achMusic.play();
-  
   const notification = document.createElement('div');
   notification.className = 'achievement-notification';
   notification.innerHTML = `<img src="${achievements[achievementId].image}">`;
   document.body.appendChild(notification);
-  
   setTimeout(() => notification.style.bottom = '20px', 100);
   setTimeout(() => {
     notification.style.bottom = '-80px';
-    setTimeout(() => notification.remove(), 500);
+    setTimeout(() => {
+      notification.remove();
+      achievementPopupActive = false;
+      processAchievementPopupQueue();
+    }, 500);
   }, 4000);
-
-  achievements[achievementId].earned = true;
-  trackAchievement(achievementId); // Add blockchain tracking
 }
+
 function resetAchievements() {
   Object.keys(achievements).forEach(key => {
     achievements[key].earned = false;
@@ -585,10 +698,6 @@ howToPlayOverlay.addEventListener('click', () => {
   howToPlayOverlay.style.display = 'none'
 })
 
-
-let endScreenShown = false
-let completionTime = null
-
 // =======================
 // 🏁 END SCREEN LOGIC
 // =======================
@@ -617,7 +726,6 @@ function showEndScreen() {
     <div id=\"retry-btn\" style=\"font-family: 'Quantico', sans-serif; color: #00ffe7; font-size: 36px; cursor: pointer; margin-top: 24px; opacity:0; transition:opacity 0.5s 0.7s;\">Retry</div>
   `;
   document.body.appendChild(overlay);
-
   setTimeout(() => {
     overlay.style.opacity = '1';
     const children = overlay.children;
@@ -629,6 +737,8 @@ function showEndScreen() {
     overlay.remove();
     resetGame();
   };
+  // Process queued achievements at end screen
+  processQueuedAchievements();
 }
 
 function resetGame() {
@@ -652,4 +762,34 @@ function resetGame() {
   levelMusic.currentTime = 0;
   levelMusic.play();
   resetAchievements();
+}
+
+async function processQueuedAchievements() {
+  if (!contract || !userWallet) return;
+  const queued = getQueuedAchievements();
+  for (const achievementId of queued) {
+    try {
+      let tx;
+      const timeInSeconds = Math.floor((Date.now() - startTime) / 1000);
+      switch(achievementId) {
+        case 'coinCollector':
+          tx = await contract.requestSmallReward(5);
+          break;
+        case 'speedDemon':
+          tx = await contract.requestTimeBasedSmallReward(timeInSeconds, 0);
+          break;
+        case 'chillPacer':
+          tx = await contract.requestTimeBasedSmallReward(0, timeInSeconds);
+          break;
+        case 'nexoFlash':
+        case 'levelComplete':
+          tx = await contract.requestBigReward(20, timeInSeconds);
+          break;
+      }
+      if (tx) await tx.wait();
+    } catch (error) {
+      console.error('Error processing queued achievement:', achievementId, error);
+    }
+  }
+  clearQueue();
 }
