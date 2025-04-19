@@ -663,7 +663,25 @@ window.addEventListener('resize', () => {
 // =======================
 // 🎮 HOW TO PLAY POPUP
 // =======================
-const howToPlayOverlay = document.createElement('div')
+let howToPlayBtn = document.getElementById('how-to-play-btn');
+if (!howToPlayBtn) {
+  howToPlayBtn = document.createElement('button');
+  howToPlayBtn.id = 'how-to-play-btn';
+  howToPlayBtn.textContent = 'How to Play';
+  howToPlayBtn.className = 'menu-btn';
+  howToPlayBtn.style.position = 'absolute';
+  howToPlayBtn.style.top = '32px';
+  howToPlayBtn.style.left = '48px';
+  howToPlayBtn.style.width = 'auto';
+  howToPlayBtn.style.padding = '10px 32px';
+  howToPlayBtn.style.fontSize = '20px';
+  howToPlayBtn.style.zIndex = '1100';
+  const menuOverlay = document.getElementById('menu-overlay');
+  if (menuOverlay) menuOverlay.appendChild(howToPlayBtn);
+}
+howToPlayBtn.style.display = 'block';
+
+const howToPlayOverlay = document.createElement('div');
 howToPlayOverlay.style.cssText = `
   display: none;
   position: fixed;
@@ -675,28 +693,23 @@ howToPlayOverlay.style.cssText = `
   justify-content: center;
   align-items: center;
   z-index: 1000;
-`
-const howToPlayImage = document.createElement('img')
-howToPlayImage.src = './img/How_to_play_Nexora.png'
-howToPlayImage.style.cssText = `
-  max-width: 80%;
-  max-height: 80%;
-  object-fit: contain;
-  transform: scale(1.2);
-`
-howToPlayOverlay.appendChild(howToPlayImage)
-document.body.appendChild(howToPlayOverlay)
+`;
+const howToPlayImage = document.createElement('img');
+howToPlayImage.src = './img/How_to_play_Nexora.png';
+howToPlayImage.style.maxWidth = '90vw';
+howToPlayImage.style.maxHeight = '90vh';
+howToPlayOverlay.appendChild(howToPlayImage);
+document.body.appendChild(howToPlayOverlay);
 
-document.getElementById('how-to-play').addEventListener('click', (e) => {
-  e.stopPropagation()
-  buttonClickSound.play()
-  howToPlayOverlay.style.display = 'flex'
-})
+howToPlayBtn.addEventListener('click', () => {
+  buttonClickSound.play();
+  howToPlayOverlay.style.display = 'flex';
+});
 
 howToPlayOverlay.addEventListener('click', () => {
-  buttonClickSound.play()
-  howToPlayOverlay.style.display = 'none'
-})
+  buttonClickSound.play();
+  howToPlayOverlay.style.display = 'none';
+});
 
 // =======================
 // 🏁 END SCREEN LOGIC
