@@ -95,4 +95,21 @@ contract NexoraRewards {
         }
         return unlocked;
     }
+
+    // Unlocks a specific achievement for the player
+    function unlockAchievement(string memory achievementId) public {
+        // Example logic: increment smallRewards or bigRewards based on achievementId
+        if (keccak256(bytes(achievementId)) == keccak256(bytes("coinCollector"))) {
+            smallRewards[msg.sender]++;
+        } else if (keccak256(bytes(achievementId)) == keccak256(bytes("speedDemon"))) {
+            smallRewards[msg.sender]++;
+        } else if (keccak256(bytes(achievementId)) == keccak256(bytes("chillPacer"))) {
+            smallRewards[msg.sender]++;
+        } else if (keccak256(bytes(achievementId)) == keccak256(bytes("nexoFlash"))) {
+            bigRewards[msg.sender]++;
+        } else if (keccak256(bytes(achievementId)) == keccak256(bytes("levelComplete"))) {
+            bigRewards[msg.sender]++;
+        }
+        // Optionally emit an event for achievement unlock
+    }
 }

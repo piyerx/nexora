@@ -307,32 +307,25 @@ const achievements = {
 
 async function verifyAchievements() {
   if (!contract || !userWallet) return;
+  
   try {
-    // Check network before making contract call
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const network = await provider.getNetwork();
-    // Replace with your expected chainId (e.g., 1 for Ethereum Mainnet, 5 for Goerli, etc.)
-    const expectedChainId = 10143; // CHANGE THIS to your deployed contract's chainId
-    if (network.chainId !== expectedChainId) {
-      alert(`Please switch your wallet to the correct network (chainId: ${expectedChainId}). Current: ${network.chainId}`);
-      return;
-    }
+    console.log("Checking achievements for wallet:", userWallet);
     const earnedAchievements = await contract.getPlayerAchievements(userWallet);
-    console.log('Achievements stored on Monad:', earnedAchievements);
+    console.log('Raw achievements response:', earnedAchievements);
+    
     earnedAchievements.forEach(achId => {
       if (achievements[achId]) {
         achievements[achId].earned = true;
       }
     });
   } catch (error) {
-    console.error('Error fetching achievements:', error);
-    let message = 'Could not fetch achievements from the blockchain.';
-    if (error && error.code === 'CALL_EXCEPTION') {
-      message = 'Failed to fetch achievements: contract call reverted. Please check if you are on the correct network and the contract is deployed with the correct ABI/address.';
-    } else if (error && error.message && error.message.includes('network does not match')) {
-      message = 'Your wallet is connected to the wrong network. Please switch to the correct network and try again.';
-    }
-    alert(message);
+    console.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      data: error.data,
+      transaction: error.transaction
+    });
+    throw error;
   }
 }
 
