@@ -338,7 +338,6 @@ startGameBtn.addEventListener('click', () => {
 window.removeEventListener('click', startMusic)
 window.removeEventListener('keydown', handleKeyStart)
 
-// Replace the placeholder wallet connection logic
 connectWalletBtn.addEventListener('click', async () => {
   buttonClickSound.play();
   try {
@@ -407,7 +406,6 @@ function updateAchievementsUI() {
   });
 }
 
-// Add achievements section to menu overlay if not present
 function ensureAchievementsSection() {
   let section = document.getElementById('achievements-section');
   if (!section) {
@@ -737,6 +735,7 @@ function showEndScreen() {
     <div style=\"font-family: 'Quantico', sans-serif; color:rgb(255, 255, 255); font-size: 80px; font-weight: bold; margin-bottom: 16px; opacity:0; transition:opacity 0.5s 0.3s;\">Stage Complete</div>
     <div style=\"font-family: 'Quantico', sans-serif; color: #fff; font-size: 32px; margin-bottom: 36px; opacity:0; transition:opacity 0.5s 0.5s;\">Can you do this faster than <span id='completion-time'>${completionTime}</span>?</div>
     <div id=\"retry-btn\" style=\"font-family: 'Quantico', sans-serif; color: #00ffe7; font-size: 36px; cursor: pointer; margin-top: 24px; opacity:0; transition:opacity 0.5s 0.7s;\">Retry</div>
+    <div style=\"font-family: 'Quantico', sans-serif; color:rgb(255, 255, 255); font-size: 20px; margin-top: 16px; opacity:0; transition:opacity 0.5s 0.7s;\">Please wait while Achievements are being processed.</div>
   `;
   document.body.appendChild(overlay);
   setTimeout(() => {
