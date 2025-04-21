@@ -10,7 +10,7 @@
 
 ## 📌 Problem Statement
 
-### **Problem Statement 2 - Unleash blockchain gameplay with MONAD**
+### **Problem Statement 2 - Unleash blockchain gameplay with MONAD **
 
 ---
 
