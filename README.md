@@ -2,7 +2,7 @@
 
 # 🚀 Project Title
 
-[**NEXORA**](https://youtu.be/sZvwEnGwah8?si=bhwMyaRamyxyBSoQ) - An Arcade Game Built on **MONAD**.
+## [**NEXORA**](https://youtu.be/sZvwEnGwah8?si=bhwMyaRamyxyBSoQ) - An Arcade Game Built on **MONAD**.
 
 ![](readme_res/Nex-github-demo.gif)
 
@@ -10,7 +10,7 @@
 
 ## 📌 Problem Statement
 
-**Problem Statement 2 - Unleash blockchain gameplay with Monad**
+### **Problem Statement 2 - Unleash blockchain gameplay with MONAD**
 
 ---
 
@@ -95,7 +95,7 @@ Highlight the most important features of your project:
 
 ## 📽️ Demo & Deliverables
 
-- **Pitch Deck / PPT Link:** 
+- **Pitch Deck / PPT Link:** https://drive.google.com/file/d/1z0Ax1yhsmmZ0PU2_IEQEXqvTFZnz4AKm/view?usp=sharing
 
 - **Demo Video Link:** https://youtu.be/sZvwEnGwah8?si=b4BqkfX9obJeF47k
 ![](readme_res/nex_demo_vid.png)
@@ -183,9 +183,9 @@ Package the game as an installable web app for desktop/mobile devices.
 
 ## 🏁 Final Words
 
-We had so much fun creating this project. Keeping everything else aside, like college studies, we really emjoyed diving deeper into Web3 and working so hard that this project becomes a reality. 12-13 hours of hard work, daily for 8 days straight, and finally worth it at the end. We are not here to win, we are here to learn and have fun. We won't complain though if winning comes to us as a by-product :)
+We had so much fun creating this project. Keeping everything else aside, like college studies, we really emjoyed diving deeper into Web3 and working so hard that this project becomes a reality. 12-13 hours of hard work, daily for 8 days straight, and finally worth it. We are not here to win, we are here to learn and have fun. We won't complain though if winning comes to us as a by-product :)
 
-And with more hackathons to come, NEXORA WILL GO FURTHER THAN THIS.
+And with more hackathons to come, NEXORA WILL GO ONLY FURTHER FROM HERE.
 
 ~Thank You.
 
